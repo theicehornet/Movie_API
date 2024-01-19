@@ -38,11 +38,11 @@ def UpdateMovie():
         return jsonify({"movie":message})
 
 
-@app.route("/Delete/<string:id>", methods=["DELETE"])
-def DeleteMovie(id):
+@app.route("/Delete/", methods=["DELETE"])
+def DeleteMovie():
     """Retorna una pelicula con un id en especifico"""
     try:
-        message = delete_movie(id)
+        message = delete_movie(request.json)
     except Exception as e:
         message = f"Error: {e}",500
     finally:

@@ -4,6 +4,12 @@ import random
 from model.movie import Movie
 
 
+
+def save_changes(movies):
+    with open("movies.json","w",encoding="utf-8") as file:
+        json.dump(movies,file)
+        
+
 def get_movies():
     if os.path.exists("movies.json"):
         with open("movies.json","r", encoding="utf-8") as file:
@@ -13,8 +19,7 @@ def get_movies():
         return movies_data
     else:
         movies = [Movie("asd123","Hunger Games","https://movieguide.b-cdn.net/wp-content/uploads/2012/06/98068201-0cc9-42ed-81ee-dcd480c4cba8-768x1152.jpg","Gary Ross",["Acciones","Aventura"],["Jennifer Lawrence"," Josh Hutcherson","Liam Hemsworth"]).to_dict()]
-        with open("movies.json","w", encoding="utf-8") as file:
-            json.dump(movies,file)
+        save_changes(movies)
         return {"movie":"no movies"}        
 
 
@@ -33,56 +38,44 @@ def verificar_datos(data):
             raise Exception(f"Falta el campo {campo} en los datos")
     movie = Movie(data["Id"],data["Titulo"],data["Poster"],data["Director"],data["Generos"],data["Actores"])
     moviedict = movie.to_dict()
-    if verificar_movie_existencia(moviedict):
-        raise Exception("La pelicula ya existe")
     return moviedict
 
 
 def add_movie(data):
     movie = verificar_datos(data)
+    if verificar_movie_existencia(movie):
+        raise Exception("La pelicula ya existe")
     if os.path.exists("movies.json"):
         movies_data = get_movies()
         movies_data.append(movie)
     else:
         movies_data = [movie]
-    
-    with open("movies.json","w") as file:
-        json.dump(movies_data,file)
+    save_changes(movies_data)
     return {"Exito":"se creo la pelicula exitosamente","movie":movie}
 
 
 def update_movie(data):
     movieupdate = verificar_datos(data)
     movies = get_movies()
-    i = 0
-    while i < len(movies):
-        if movies[i]["Id"] == movieupdate["Id"]:
-             movies[i]["Titulo"]=movieupdate["Titulo"],
-             movies[i]["Poster"]=movieupdate["Poster"],
-             movies[i]["Director"]=movieupdate["Director"],
-             movies[i]["Generos"]=movieupdate["Generos"],
-             movies[i]["Actores"]=movieupdate["Actores"]
-             with open("movies.json","w") as file:
-                json.dump(movies,file)
-             return {"Success":"movie updated","movie":movieupdate}
-        i += 1
-    raise Exception("movie not found")
+    new_movies = [movie for movie in movies if movie["Id"] != movieupdate["Id"]]
+    new_movies.append(movieupdate)
+    save_changes(new_movies)
+    return {"Success":"movie updated","movie":movieupdate}
     
 
 def movie_exist(id):
     movies = get_movies()
     for movie in movies:
-        if movie["id"] == id:
+        if movie["Id"] == id:
             return True
     return False
 
 
-def delete_movie(id):
-    if movie_exist():
+def delete_movie(data):
+    if movie_exist(data["Id"]):
         movies = get_movies()
-        new_movies = [movie for movie in movies if movie["id"] != id]
-        with open("movies.json","w") as file:
-            json.dump(new_movies,file)
+        new_movies = [movie for movie in movies if movie["Id"] != data["Id"]]
+        save_changes(new_movies)
         return {"Succes":"Movie deleted"}
     raise Exception("not found")
 
