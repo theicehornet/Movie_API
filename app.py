@@ -6,7 +6,7 @@ app = Flask(__name__)
 # Make the WSGI interface available at the top level so wfastcgi can get it.
 wsgi_app = app.wsgi_app
      
-@app.route("/Create/", methods=["POST"])
+@app.route("/movie", methods=["POST"])
 def CreateMovie():
     """Crea una pelicula y la retorna"""
     try:
@@ -17,7 +17,7 @@ def CreateMovie():
         
 
 
-@app.route("/", methods=["GET"])
+@app.route("/movie", methods=["GET"])
 def GetMovies():
     """Retorna todas las peliculas""";
     try:
@@ -28,8 +28,9 @@ def GetMovies():
         return jsonify({"movies":message})
 
 
-@app.route("/Update/", methods=["PATCH"])
+@app.route("/movie", methods=["PATCH"])
 def UpdateMovie():
+    """ """
     try:
         message = update_movie(request.json)
     except Exception as e:
@@ -38,7 +39,7 @@ def UpdateMovie():
         return jsonify({"movie":message})
 
 
-@app.route("/Delete/", methods=["DELETE"])
+@app.route("/movie", methods=["DELETE"])
 def DeleteMovie():
     """Retorna una pelicula con un id en especifico"""
     try:
@@ -49,7 +50,7 @@ def DeleteMovie():
         return jsonify(message)
     
 
-@app.route("/<string:id>", methods=["GET"])
+@app.route("/movie/<string:id>", methods=["GET"])
 def GetMovie(id):
     """Retorna una pelicula con un id en especifico"""
     try:
@@ -60,7 +61,7 @@ def GetMovie(id):
         return jsonify(message)
 
 
-@app.route("/random", methods=["GET"])
+@app.route("/movie/random", methods=["GET"])
 def RandomMovie():
     """Retorna una pelicula random"""
     try:

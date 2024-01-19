@@ -89,6 +89,6 @@ def get_random_movie():
 def get_movie_by_id(id):
     movies = get_movies()
     for movie in movies:
-        if movie["id"] == id:
+        if movie["Id"] == id:
             return {"movie":movie}
     raise Exception("not found")
